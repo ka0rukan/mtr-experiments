@@ -27,7 +27,8 @@ jobs:
       uses: manusa/actions-publish-docker@v1.0.1
       with:
         name: pyscan
-        tag: Build:$(date +%s)
+        tag: build
+        tag: $(date +%s)
         username: ${{ secrets.DOCKER_HUB_USER }}
         password: ${{ secrets.DOCKER_HUB_PASSWORD }}
         registry: brbuxton/pyscan
