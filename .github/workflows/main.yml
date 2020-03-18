@@ -21,17 +21,13 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-
-    # Build our first docker image!!!
     - name: Build the Docker image
       run: docker build . --file Dockerfile.build --tag build:$(date +%s)
-
-    # Runs a single command using the runners shell
-    - name: Run a one-line script
-      run: echo Hello, world!
-
-    # Runs a set of commands using the runners shell
-    - name: Run a multi-line script
-      run: |
-        echo Add other actions to build,
-        echo test, and deploy your project.
+    - name: Docker Publish
+      uses: manusa/actions-publish-docker@v1.0.1
+      with:
+        name: pyscan
+        tag: Build:$(date +%s)
+        username: ${{ secrets.DOCKER_HUB_USER }}
+        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        registry: brbuxton/pyscan
