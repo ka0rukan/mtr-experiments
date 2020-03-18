@@ -21,10 +21,10 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-  
+
     # Build our first docker image!!!
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      run: docker build . --file Dockerfile --tag balenalib/raspberrypi3-alpine-python:$(date +%s)
 
     # Runs a single command using the runners shell
     - name: Run a one-line script
