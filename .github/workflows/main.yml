@@ -24,7 +24,7 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile.build --tag build:$(date +%s)
     - name: Docker Publish
-      uses: manusa/actions-publish-docker@latest
+      uses: manusa/actions-publish-docker@master
       with:
         name: pyscan
         tag: build
