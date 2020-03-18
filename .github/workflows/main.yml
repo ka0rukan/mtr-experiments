@@ -24,10 +24,10 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile.build --tag build:$(date +%s)
     - name: Docker Publish
-      uses: manusa/actions-publish-docker@master
+      uses: elgohr/Publish-Docker-Github-Action@2.13
       with:
         name: pyscan
-        tag: build
+        tag_names: build
         username: ${{ secrets.DOCKER_HUB_USER }}
         password: ${{ secrets.DOCKER_HUB_PASSWORD }}
         registry: brbuxton/pyscan
