@@ -24,7 +24,7 @@ jobs:
 
     # Build our first docker image!!!
     - name: Build the Docker image
-      run: docker build . python:3.5.1 --tag raspberrypi3-alpine-python:$(date +%s)
+      run: docker build python:3.5.1 --tag raspberrypi3-alpine-python:$(date +%s)
 
     # Runs a single command using the runners shell
     - name: Run a one-line script
