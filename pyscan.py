@@ -1,14 +1,16 @@
 import subprocess
 import re
 import nmap
+import os
+import IPy
 
-count = 5
-host = "8.8.8.8"  # TODO: pull host, count and other variables from environment
-mtr_result = {}
+count = os.getenv('COUNT')
+host = os.getenv('HOST')
 
 
 def mtr(host, count):
-    mtr_options = f"-r -c {count} {host}"
+    mtr_result = []
+    mtr_options = f"-rn -c {count} {host}"
 
     mtr = subprocess.Popen([f"mtr {mtr_options}"], shell=True, stdout=subprocess.PIPE)
     out, err = mtr.communicate()
@@ -29,7 +31,7 @@ def mtr(host, count):
                     'worst': stripped_values.group(8),
                     'Standard Deviation': stripped_values.group(9)
                     }
-            mtr_result[stripped_values.group(1)] = mtr_entry
+            mtr_result.append(mtr_entry)
     return mtr_result
 
 
@@ -46,9 +48,22 @@ def netmap(host):
 
 def main():
     mtr_result = mtr(host, count)
-    nmap_result = netmap(host)
-    netscan = {host: [mtr_result, nmap_result]}
-    print(netscan)
+    nmap_hops = []
+    for line in mtr_result:
+        if IPy.IP(line['address']).iptype() != 'PRIVATE':
+            try:
+                nmap_result = {line['address']: netmap(line['address'])}
+                nmap_hops.append(nmap_result)
+            except:
+                nmap_result = {line['address']: 'Error Scanning'}
+                nmap_hops.append(nmap_result)
+        else:
+            nmap_result = {line['address']: 'RFC1918'}
+            nmap_hops.append(nmap_result)
+    # netscan = {host: value for [mtr_result, nmap_result]}
+    print(mtr_result)
+    print(nmap_hops)
+    print('Break here!')
 
 
 if __name__ == '__main__':
