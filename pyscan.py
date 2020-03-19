@@ -3,10 +3,9 @@ import re
 import nmap
 
 count = 5
-host = "8.8.8.8"
+host = "8.8.8.8"  # TODO: pull host, count and other variables from environment
 mtr_result = {}
 
-#added comment to test new workflow
 
 def mtr(host, count):
     mtr_options = f"-r -c {count} {host}"
@@ -14,7 +13,8 @@ def mtr(host, count):
     mtr = subprocess.Popen([f"mtr {mtr_options}"], shell=True, stdout=subprocess.PIPE)
     out, err = mtr.communicate()
 
-    rgx = re.compile(r'\s*(\d+).+?(\d+\.\d+\.\d+\.\d+|\S)\s+(\d+\.\d\%)\s+(\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)')
+    rgx = re.compile(r'\s*(\d+).+?(\d+\.\d+\.\d+\.\d+|\S)\s+(\d+\.\d\%)\s+(\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+'
+                     r'(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)')
     out_lines = out.decode('utf-8').splitlines()
 
     for line in out_lines:
@@ -32,6 +32,7 @@ def mtr(host, count):
             mtr_result[stripped_values.group(1)] = mtr_entry
     return mtr_result
 
+
 def netmap(host):
     nm = nmap.PortScanner()
     nm.scan(host)
@@ -42,12 +43,13 @@ def netmap(host):
             nm_protos[proto][port] = nm[host][proto][port]
     return nm_protos
 
+
 def main():
     mtr_result = mtr(host, count)
     nmap_result = netmap(host)
-    netscan = {}
-    netscan[host] = [mtr_result, nmap_result]
+    netscan = {host: [mtr_result, nmap_result]}
     print(netscan)
+
 
 if __name__ == '__main__':
     main()
