@@ -1,7 +1,7 @@
 FROM python:3.6.10
 
 WORKDIR /app
-RUN "git", "clone", "https://github.com/ka0rukan/pyscan"
+RUN git clone https://github.com/ka0rukan/pyscan
 RUN echo "build"
 RUN apt-get update
 RUN apt-get install -y nmap
