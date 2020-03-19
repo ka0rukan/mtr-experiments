@@ -25,4 +25,5 @@ jobs:
       run: |
          docker build . --file Dockerfile.build -t ${{ secrets.DOCKER_HUB_USER }}/pyscan:build$(date +%s)
          docker login -u ${{ secrets.DOCKER_HUB_USER }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
+         docker images | grep "${{ secrets.DOCKER_HUB_USER }}/pyscan:build$(date +%s)" |wc -l
          docker push ${{ secrets.DOCKER_HUB_USER }}/pyscan:build$(date +%s)
