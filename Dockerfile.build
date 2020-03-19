@@ -7,4 +7,4 @@ RUN apt-get update
 RUN apt-get install -y nmap
 RUN apt-get install -y mtr
 RUN pip install python-nmap
-ENTRYPOINT python /app/pyscan.py
+ENTRYPOINT python /app/pyscan/pyscan.py
