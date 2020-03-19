@@ -22,7 +22,7 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build . --file Dockerfile -t ${{ secrets.DOCKER_HUB_USER }}/pyscan:build$(date +%s)
+      run: docker build . --file Dockerfile.build -t ${{ secrets.DOCKER_HUB_USER }}/pyscan:build$(date +%s)
          # docker login -u ${{ secrets.DOCKER_HUB_USER }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
          # docker images | grep "${{ secrets.DOCKER_HUB_USER }}/pyscan:build$(date +%s)" |wc -l
          # docker push ${{ secrets.DOCKER_HUB_USER }}/pyscan:build$(date +%s)
