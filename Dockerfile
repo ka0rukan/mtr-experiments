@@ -2,6 +2,7 @@ FROM python:3.6.10-buster
 
 WORKDIR /app
 RUN git clone https://github.com/ka0rukan/mtr-experiments
+RUN echo "Buster"
 RUN apt-get update
 RUN apt-get install -y nmap
 RUN apt-get install -y mtr
