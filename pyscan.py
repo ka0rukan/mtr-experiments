@@ -51,7 +51,7 @@ def netmap(host):
 
 
 def main():
-    logger.debug('main' + f'Entering main() - HOST = {os.getenv('HOST')} and COUNT = {os.getenv('COUNT')}')
+    logger.debug('main' + f'Entering main() - HOST = {os.getenv("HOST")} and COUNT = {os.getenv("COUNT")}')
     mtr_result = mtr(host, count)
     nmap_hops = []
     for line in mtr_result:
