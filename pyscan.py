@@ -3,6 +3,7 @@ import re
 import nmap
 import os
 import IPy
+import json
 import logging.handlers
 
 
@@ -66,9 +67,10 @@ def main():
             nmap_result = {line['address']: 'RFC1918'}
             nmap_hops.append(nmap_result)
     # netscan = {host: value for [mtr_result, nmap_result]}
-    print(mtr_result)
-    print(nmap_hops)
-    print('Break here!')
+    mtr_json = json.dumps(mtr_result)
+    nmap_json = json.dumps(nmap_hops)
+    print(mtr_json)
+    print(nmap_json)
 
 
 if __name__ == '__main__':
