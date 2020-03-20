@@ -3,6 +3,10 @@
 
 name: Python application
 
+env:
+  HOST: 8.8.8.8
+  COUNT: 5
+
 on:
   push:
     branches: [ master ]
