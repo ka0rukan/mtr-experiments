@@ -66,11 +66,8 @@ def main():
         else:
             nmap_result = {line['address']: 'RFC1918'}
             nmap_hops.append(nmap_result)
-    # netscan = {host: value for [mtr_result, nmap_result]}
-    mtr_json = json.dumps(mtr_result)
-    nmap_json = json.dumps(nmap_hops)
-    print(mtr_json)
-    print(nmap_json)
+    print(json.dumps(mtr_result, indent=4))
+    print(json.dumps(nmap_hop, indent=4))
 
 
 if __name__ == '__main__':
