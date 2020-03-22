@@ -12,7 +12,7 @@ host = os.getenv('HOST')
 
 
 def mtr(host, count):
-    logger.debug('mtr' + f'Entering mtr - host = {host} and count = {count}')
+    logger.debug('mtr - ' + f'Entering mtr - host = {host} and count = {count}')
     mtr_result = []
     mtr_options = f"-rn -c {count} {host}"
 
@@ -40,7 +40,7 @@ def mtr(host, count):
 
 
 def netmap(host):
-    logger.debug('netmap' + f'Entering netmap for host {host}')
+    logger.debug('netmap - ' + f'Entering netmap for host {host}')
     nm = nmap.PortScanner()
     nm.scan(host)
     nm_protos = {}
@@ -52,7 +52,7 @@ def netmap(host):
 
 
 def main():
-    logger.debug('main' + f'Entering main() - HOST = {os.getenv("HOST")} and COUNT = {os.getenv("COUNT")}')
+    logger.debug('main - ' + f'Entering main() - HOST = {os.getenv("HOST")} and COUNT = {os.getenv("COUNT")}')
     mtr_result = mtr(host, count)
     nmap_hops = []
     for line in mtr_result:
@@ -67,7 +67,7 @@ def main():
             nmap_result = {line['address']: 'RFC1918'}
             nmap_hops.append(nmap_result)
     print(json.dumps(mtr_result, indent=4))
-    print(json.dumps(nmap_hop, indent=4))
+    print(json.dumps(nmap_hops, indent=4))
 
 
 if __name__ == '__main__':
