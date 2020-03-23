@@ -7,36 +7,46 @@ import json
 import logging.handlers
 
 
-count = os.getenv('COUNT')
-host = os.getenv('HOST')
+# count = os.getenv('COUNT')
+# host = os.getenv('HOST')
 
+class MtrClass:
+    def __init__(self, host, count, options):
+        self.count = count
+        self.host = host
+        self.options = options
 
-def mtr(host, count):
-    logger.debug('mtr - ' + f'Entering mtr - host = {host} and count = {count}')
-    mtr_result = []
-    mtr_options = f"-rn -c {count} {host}"
+    def mtr_module(self):
+        logger.debug('mtr - ' + f'Entering mtr - host = {self.host} and count = {self.count}')
+        if self.options is None:
+            mtr_options = f'-rn -c {self.count} {self.host}'
+            mtr = subprocess.Popen([f"mtr {mtr_options}"], shell=True, stdout=subprocess.PIPE)
+            out, err = mtr.communicate()
+            mtr_result = self.defaultrgx(out)
+            return mtr_result
+        else:
+            raise NotImplementedError
 
-    mtr = subprocess.Popen([f"mtr {mtr_options}"], shell=True, stdout=subprocess.PIPE)
-    out, err = mtr.communicate()
+    def defaultrgx(self, out):  # TODO: Build method that dynamically builds RGX based on options.
+        mtr_result = []
+        rgx = re.compile(r'\s*(\d+).+?(\d+\.\d+\.\d+\.\d+|\S)\s+(\d+\.\d\%)\s+(\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+'
+                         r'(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)')
+        out_lines = out.decode('utf-8').splitlines()
 
-    rgx = re.compile(r'\s*(\d+).+?(\d+\.\d+\.\d+\.\d+|\S)\s+(\d+\.\d\%)\s+(\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+'
-                     r'(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)')
-    out_lines = out.decode('utf-8').splitlines()
-
-    for line in out_lines:
-        stripped_values = rgx.search(line.strip())
-        if not (stripped_values is None):
-            mtr_entry = {'address': stripped_values.group(2),
-                    'loss': stripped_values.group(3),
-                    'sent': stripped_values.group(4),
-                    'last': stripped_values.group(5),
-                    'average': stripped_values.group(6),
-                    'best': stripped_values.group(7),
-                    'worst': stripped_values.group(8),
-                    'Standard Deviation': stripped_values.group(9)
-                    }
-            mtr_result.append(mtr_entry)
-    return mtr_result
+        for line in out_lines:
+            stripped_values = rgx.search(line.strip())
+            if not (stripped_values is None):
+                mtr_entry = {'address': stripped_values.group(2),
+                             'loss': stripped_values.group(3),
+                             'sent': stripped_values.group(4),
+                             'last': stripped_values.group(5),
+                             'average': stripped_values.group(6),
+                             'best': stripped_values.group(7),
+                             'worst': stripped_values.group(8),
+                             'Standard Deviation': stripped_values.group(9)
+                             }
+                mtr_result.append(mtr_entry)
+        return mtr_result
 
 
 def netmap(host):
@@ -53,7 +63,8 @@ def netmap(host):
 
 def main():
     logger.debug('main - ' + f'Entering main() - HOST = {os.getenv("HOST")} and COUNT = {os.getenv("COUNT")}')
-    mtr_result = mtr(host, count)
+    mtr = MtrClass(os.getenv('HOST'), os.getenv('COUNT'))
+    mtr_result = mtr.mtr_module()
     nmap_hops = []
     for line in mtr_result:
         if IPy.IP(line['address']).iptype() != 'PRIVATE':
