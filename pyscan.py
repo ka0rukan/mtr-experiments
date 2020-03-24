@@ -7,27 +7,11 @@ import json
 import logging.handlers
 
 
-# count = os.getenv('COUNT')
-# host = os.getenv('HOST')
+class DefaultRgx(object):  # Dependency injection service
+    def __init__(self):
+        self.options = None
 
-class MtrClass:
-    def __init__(self, host, count, options):
-        self.count = count
-        self.host = host
-        self.options = options
-
-    def mtr_module(self):
-        logger.debug('mtr - ' + f'Entering mtr - host = {self.host} and count = {self.count}')
-        if self.options is None:
-            mtr_options = f'-rn -c {self.count} {self.host}'
-            mtr = subprocess.Popen([f"mtr {mtr_options}"], shell=True, stdout=subprocess.PIPE)
-            out, err = mtr.communicate()
-            mtr_result = self.defaultrgx(out)
-            return mtr_result
-        else:
-            raise NotImplementedError
-
-    def defaultrgx(self, out):  # TODO: Build method that dynamically builds RGX based on options.
+    def mtr_options(self, options, out):
         mtr_result = []
         rgx = re.compile(r'\s*(\d+).+?(\d+\.\d+\.\d+\.\d+|\S)\s+(\d+\.\d\%)\s+(\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+'
                          r'(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)')
@@ -49,6 +33,32 @@ class MtrClass:
         return mtr_result
 
 
+class MtrRun(DefaultRgx):  # Dependency injection client
+    def __init__(self, host, count, options):
+        self.count = count
+        self.host = host
+        self.options = options
+
+    def mtr_module(self, host, count, options):
+        logger.debug('mtr - ' + f'Entering mtr - host = {host} and count = {count}')
+        mtr_options = f'-rn -c {count} {host}'
+        mtr = subprocess.Popen([f"mtr {mtr_options}"], shell=True, stdout=subprocess.PIPE)
+        out, err = mtr.communicate()
+        mtr_result = super().mtr_options(options, out)
+        return mtr_result
+
+
+class MtrOptions(DefaultRgx):  # Dependency injection interface
+    def mtr_options(self, options, out):  # TODO: Build method that dynamically builds RGX based on options.
+        mtr_result = ['I was injected instead of DefaultRgx']
+        out_lines = out.decode('utf-8').splitlines()
+        return mtr_result
+
+
+class Injector(MtrOptions, MtrRun):  # Dependency injection injector
+    pass
+
+
 def netmap(host):
     logger.debug('netmap - ' + f'Entering netmap for host {host}')
     nm = nmap.PortScanner()
@@ -63,7 +73,7 @@ def netmap(host):
 
 def main():
     logger.debug('main - ' + f'Entering main() - HOST = {os.getenv("HOST")} and COUNT = {os.getenv("COUNT")}')
-    mtr = MtrClass(os.getenv('HOST'), os.getenv('COUNT'))
+    mtr = Injector(os.getenv('HOST'), os.getenv('COUNT'), None)
     mtr_result = mtr.mtr_module()
     nmap_hops = []
     for line in mtr_result:
